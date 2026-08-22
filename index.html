@@ -1036,7 +1036,36 @@ input,select,textarea,button{
 const SUPABASE_URL = "https://uucrycbkxbmxweovbstt.supabase.co";
 const SUPABASE_KEY = "sb_publishable_memlIdh30Xc6cw8uYFAJxA_GLXkRQJb";
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+async function loadRealStats() {
+  try {
+    const [
+      { count: climbers },
+      { count: routesCount },
+      { count: sendsCount },
+      { data: sectorRows }
+    ] = await Promise.all([
+      supabaseClient.from('profiles').select('*', { count: 'exact', head: true }),
+      supabaseClient.from('routes').select('*', { count: 'exact', head: true }),
+      supabaseClient.from('sends').select('*', { count: 'exact', head: true }),
+      supabaseClient.from('routes').select('sector')
+    ]);
 
+    const sectors = new Set(
+      (sectorRows || [])
+        .map(r => (r.sector || '').trim())
+        .filter(Boolean)
+    ).size;
+
+    document.getElementById('statClimbers').textContent = climbers ?? 0;
+    document.getElementById('statRoutes').textContent = routesCount ?? 0;
+    document.getElementById('statSends').textContent = sendsCount ?? 0;
+    document.getElementById('statSectors').textContent = sectors;
+  } catch (error) {
+    console.error('Error cargando estadísticas:', error);
+  }
+}
+
+loadRealStats();
 const m=document.querySelector('.menu'),d=document.querySelector('.drawer');
 m.onclick=()=>d.classList.toggle('open');
 document.querySelectorAll('.drawer a').forEach(a=>a.onclick=()=>d.classList.remove('open'));

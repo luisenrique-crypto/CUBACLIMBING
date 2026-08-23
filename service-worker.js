@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cubaclimbing-v56';
+const CACHE_NAME = 'cubaclimbing-v57';
 
 const CORE = [
   './',
